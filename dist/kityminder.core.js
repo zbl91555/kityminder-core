@@ -1,12 +1,3 @@
-/*!
- * ====================================================
- * Kity Minder Core - v1.4.50 - 2018-09-17
- * https://github.com/fex-team/kityminder-core
- * GitHub: https://github.com/fex-team/kityminder-core.git 
- * Copyright (c) 2018 Baidu FEX; Licensed BSD-3-Clause
- * ====================================================
- */
-
 (function () {
 var _p = {
     r: function(index) {
@@ -36,47 +27,6 @@ var _p = {
         }
     }
 };
-
-//src/connect/arc.js
-/**
- * @fileOverview
- *
- * 圆弧连线
- *
- * @author: techird
- * @copyright: Baidu FEX, 2014
- */
-_p[0] = {
-    value: function(require, exports, module) {
-        var kity = _p.r(17);
-        var connect = _p.r(11);
-        var connectMarker = new kity.Marker().pipe(function() {
-            var r = 7;
-            var dot = new kity.Circle(r - 1);
-            this.addShape(dot);
-            this.setRef(r - 1, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
-            this.dot = dot;
-            this.node.setAttribute("markerUnits", "userSpaceOnUse");
-        });
-        connect.register("arc", function(node, parent, connection, width, color) {
-            var box = node.getLayoutBox(), pBox = parent.getLayoutBox();
-            var start, end, vector;
-            var abs = Math.abs;
-            var pathData = [];
-            var side = box.x > pBox.x ? "right" : "left";
-            node.getMinder().getPaper().addResource(connectMarker);
-            start = new kity.Point(pBox.cx, pBox.cy);
-            end = side == "left" ? new kity.Point(box.right + 2, box.cy) : new kity.Point(box.left - 2, box.cy);
-            vector = kity.Vector.fromPoints(start, end);
-            pathData.push("M", start);
-            pathData.push("A", abs(vector.x), abs(vector.y), 0, 0, vector.x * vector.y > 0 ? 0 : 1, end);
-            connection.setMarker(connectMarker);
-            connectMarker.dot.fill(color);
-            connection.setPathData(pathData);
-        });
-    }
-};
-
 //src/connect/arc_tp.js
 /**
  *
@@ -85,7 +35,8 @@ _p[0] = {
  * @author: along
  * @copyright: bpd729@163.com , 2015
  */
-_p[1] = {
+
+_p[0] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
         var connect = _p.r(11);
@@ -115,8 +66,7 @@ _p[1] = {
             node.getMinder().getPaper().addResource(connectMarker);
             start = new kity.Point(start_box.cx, start_box.cy);
             end = new kity.Point(end_box.cx, end_box.cy);
-            var jl = Math.sqrt(Math.pow(start.x - end.x, 2) + Math.pow(start.y - end.y, 2));
-            //两圆中心点距离
+            var jl = Math.sqrt(Math.pow(start.x - end.x, 2) + Math.pow(start.y - end.y, 2)); //两圆中心点距离
             jl = node.getIndex() == 0 ? jl * .4 : jl;
             vector = kity.Vector.fromPoints(start, end);
             pathData.push("M", start);
@@ -129,8 +79,7 @@ _p[1] = {
                 var nextConnection = nextNode.getConnection();
                 var next_end_box = nextNode.getLayoutBox();
                 var next_end = new kity.Point(next_end_box.cx, next_end_box.cy);
-                var jl2 = Math.sqrt(Math.pow(end.x - next_end.x, 2) + Math.pow(end.y - next_end.y, 2));
-                //两圆中心点距离
+                var jl2 = Math.sqrt(Math.pow(end.x - next_end.x, 2) + Math.pow(end.y - next_end.y, 2)); //两圆中心点距离
                 pathData = [];
                 pathData.push("M", end);
                 pathData.push("A", jl2, jl2, 0, 0, 1, next_end);
@@ -141,7 +90,46 @@ _p[1] = {
         });
     }
 };
+//src/connect/arc.js
+/**
+ * @fileOverview
+ *
+ * 圆弧连线
+ *
+ * @author: techird
+ * @copyright: Baidu FEX, 2014
+ */
 
+_p[1] = {
+    value: function(require, exports, module) {
+        var kity = _p.r(17);
+        var connect = _p.r(11);
+        var connectMarker = new kity.Marker().pipe(function() {
+            var r = 7;
+            var dot = new kity.Circle(r - 1);
+            this.addShape(dot);
+            this.setRef(r - 1, 0).setViewBox(-r, -r, r + r, r + r).setWidth(r).setHeight(r);
+            this.dot = dot;
+            this.node.setAttribute("markerUnits", "userSpaceOnUse");
+        });
+        connect.register("arc", function(node, parent, connection, width, color) {
+            var box = node.getLayoutBox(), pBox = parent.getLayoutBox();
+            var start, end, vector;
+            var abs = Math.abs;
+            var pathData = [];
+            var side = box.x > pBox.x ? "right" : "left";
+            node.getMinder().getPaper().addResource(connectMarker);
+            start = new kity.Point(pBox.cx, pBox.cy);
+            end = side == "left" ? new kity.Point(box.right + 2, box.cy) : new kity.Point(box.left - 2, box.cy);
+            vector = kity.Vector.fromPoints(start, end);
+            pathData.push("M", start);
+            pathData.push("A", abs(vector.x), abs(vector.y), 0, 0, vector.x * vector.y > 0 ? 0 : 1, end);
+            connection.setMarker(connectMarker);
+            connectMarker.dot.fill(color);
+            connection.setPathData(pathData);
+        });
+    }
+};
 //src/connect/bezier.js
 /**
  * @fileOverview
@@ -151,6 +139,7 @@ _p[1] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[2] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -178,7 +167,6 @@ _p[2] = {
         });
     }
 };
-
 //src/connect/fish-bone-master.js
 /**
  * @fileOverview
@@ -188,6 +176,7 @@ _p[2] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[3] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -205,7 +194,6 @@ _p[3] = {
         });
     }
 };
-
 //src/connect/l.js
 /**
  * @fileOverview
@@ -215,6 +203,7 @@ _p[3] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[4] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -236,7 +225,6 @@ _p[4] = {
         });
     }
 };
-
 //src/connect/poly.js
 /**
  * @fileOverview
@@ -246,6 +234,7 @@ _p[4] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[5] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -293,7 +282,6 @@ _p[5] = {
         });
     }
 };
-
 //src/connect/under.js
 /**
  * @fileOverview
@@ -303,6 +291,7 @@ _p[5] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[6] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -335,7 +324,6 @@ _p[6] = {
         });
     }
 };
-
 //src/core/_boxv.js
 /**
  * @fileOverview
@@ -345,6 +333,7 @@ _p[6] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[7] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -368,7 +357,6 @@ _p[7] = {
         }
     }
 };
-
 //src/core/animate.js
 /**
  * @fileOverview
@@ -378,6 +366,7 @@ _p[7] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[8] = {
     value: function(require, exports, module) {
         var Minder = _p.r(19);
@@ -411,8 +400,8 @@ _p[8] = {
         };
     }
 };
-
 //src/core/command.js
+
 _p[9] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -553,8 +542,8 @@ _p[9] = {
         module.exports = Command;
     }
 };
-
 //src/core/compatibility.js
+
 _p[10] = {
     value: function(require, exports, module) {
         var utils = _p.r(33);
@@ -563,14 +552,14 @@ _p[10] = {
             switch (version) {
               case "1.1.3":
                 c_113_120(json);
+                /* falls through */
 
-              /* falls through */
-                case "1.2.0":
+              case "1.2.0":
               case "1.2.1":
                 c_120_130(json);
+                /* falls through */
 
-              /* falls through */
-                case "1.3.0":
+              case "1.3.0":
               case "1.3.1":
               case "1.3.2":
               case "1.3.3":
@@ -639,8 +628,8 @@ _p[10] = {
         return compatibility;
     }
 };
-
 //src/core/connect.js
+
 _p[11] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -741,8 +730,8 @@ _p[11] = {
         exports.register = register;
     }
 };
-
 //src/core/data.js
+
 _p[12] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -830,6 +819,7 @@ _p[12] = {
             Text2Children: function(node, text) {
                 if (!(node instanceof kityminder.Node)) {
                     return;
+                    // throw new Error('Json2Children::node is not a kityminder.Node type!');
                 }
                 var children = [], jsonMap = {}, level = 0;
                 var LINE_SPLITTER = /\r|\n|\r\n/, TAB_REGEXP = /^(\t|\x20{4})/;
@@ -942,6 +932,7 @@ _p[12] = {
                     this.removeNode(this._root.getChildren()[0]);
                 }
                 json = compatibility(json);
+                console.log(json);
                 this.importNode(this._root, json.root);
                 this.setTemplate(json.template || "default");
                 this.setTheme(json.theme || null);
@@ -1049,8 +1040,8 @@ _p[12] = {
         });
     }
 };
-
 //src/core/event.js
+
 _p[13] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -1281,8 +1272,8 @@ _p[13] = {
         module.exports = MinderEvent;
     }
 };
-
 //src/core/focus.js
+
 _p[14] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -1322,8 +1313,8 @@ _p[14] = {
         });
     }
 };
-
 //src/core/keymap.js
+
 _p[15] = {
     value: function(require, exports, module) {
         var keymap = {
@@ -1433,8 +1424,8 @@ _p[15] = {
         module.exports = keymap;
     }
 };
-
 //src/core/keyreceiver.js
+
 _p[16] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -1495,7 +1486,6 @@ _p[16] = {
         });
     }
 };
-
 //src/core/kity.js
 /**
  * @fileOverview
@@ -1505,13 +1495,14 @@ _p[16] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[17] = {
     value: function(require, exports, module) {
         module.exports = window.kity;
     }
 };
-
 //src/core/layout.js
+
 _p[18] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -1921,7 +1912,9 @@ _p[18] = {
                                 consume();
                             }, 150);
                         });
-                    } else {
+                    }
+                    // 否则直接更新
+                     else {
                         applyMatrix(node, matrix);
                         me.fire("layoutfinish", {
                             node: node,
@@ -1940,7 +1933,6 @@ _p[18] = {
         module.exports = Layout;
     }
 };
-
 //src/core/minder.js
 /**
  * @fileOverview
@@ -1950,6 +1942,7 @@ _p[18] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[19] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -1976,8 +1969,8 @@ _p[19] = {
         module.exports = Minder;
     }
 };
-
 //src/core/module.js
+
 _p[20] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2100,8 +2093,8 @@ _p[20] = {
         });
     }
 };
-
 //src/core/node.js
+
 _p[21] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2446,7 +2439,6 @@ _p[21] = {
         module.exports = MinderNode;
     }
 };
-
 //src/core/option.js
 /**
  * @fileOverview
@@ -2456,6 +2448,7 @@ _p[21] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[22] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2482,7 +2475,6 @@ _p[22] = {
         });
     }
 };
-
 //src/core/paper.js
 /**
  * @fileOverview
@@ -2492,6 +2484,7 @@ _p[22] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[23] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2550,7 +2543,6 @@ _p[23] = {
         });
     }
 };
-
 //src/core/patch.js
 /**
  * @fileOverview
@@ -2560,6 +2552,7 @@ _p[23] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[24] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2658,8 +2651,8 @@ _p[24] = {
         });
     }
 };
-
 //src/core/promise.js
+
 _p[25] = {
     value: function(require, exports, module) {
         /*!
@@ -2669,30 +2662,20 @@ _p[25] = {
     **  Source-Code distributed on <http://github.com/rse/thenable>
     */
         /*  promise states [Promises/A+ 2.1]  */
-        var STATE_PENDING = 0;
-        /*  [Promises/A+ 2.1.1]  */
-        var STATE_FULFILLED = 1;
-        /*  [Promises/A+ 2.1.2]  */
-        var STATE_REJECTED = 2;
-        /*  [Promises/A+ 2.1.3]  */
+        var STATE_PENDING = 0; /*  [Promises/A+ 2.1.1]  */
+        var STATE_FULFILLED = 1; /*  [Promises/A+ 2.1.2]  */
+        var STATE_REJECTED = 2; /*  [Promises/A+ 2.1.3]  */
         /*  promise object constructor  */
         var Promise = function(executor) {
             /*  optionally support non-constructor/plain-function call  */
             if (!(this instanceof Promise)) return new Promise(executor);
             /*  initialize object  */
             this.id = "Thenable/1.0.7";
-            this.state = STATE_PENDING;
-            /*  initial state  */
-            this.fulfillValue = undefined;
-            /*  initial value  */
-            /*  [Promises/A+ 1.3, 2.1.2.2]  */
-            this.rejectReason = undefined;
-            /*  initial reason */
-            /*  [Promises/A+ 1.5, 2.1.3.2]  */
-            this.onFulfilled = [];
-            /*  initial handlers  */
-            this.onRejected = [];
-            /*  initial handlers  */
+            this.state = STATE_PENDING; /*  initial state  */
+            this.fulfillValue = undefined; /*  initial value  */ /*  [Promises/A+ 1.3, 2.1.2.2]  */
+            this.rejectReason = undefined; /*  initial reason */ /*  [Promises/A+ 1.5, 2.1.3.2]  */
+            this.onFulfilled = []; /*  initial handlers  */
+            this.onRejected = []; /*  initial handlers  */
             /*  support optional executor function  */
             if (typeof executor === "function") executor.call(this, this.fulfill.bind(this), this.reject.bind(this));
         };
@@ -2708,14 +2691,11 @@ _p[25] = {
             /*  'The then Method' [Promises/A+ 1.1, 1.2, 2.2]  */
             then: function(onFulfilled, onRejected) {
                 var curr = this;
-                var next = new Promise();
-                /*  [Promises/A+ 2.2.7]  */
-                curr.onFulfilled.push(resolver(onFulfilled, next, "fulfill"));
-                /*  [Promises/A+ 2.2.2/2.2.6]  */
-                curr.onRejected.push(resolver(onRejected, next, "reject"));
-                /*  [Promises/A+ 2.2.3/2.2.6]  */
+                var next = new Promise(); /*  [Promises/A+ 2.2.7]  */
+                curr.onFulfilled.push(resolver(onFulfilled, next, "fulfill")); /*  [Promises/A+ 2.2.2/2.2.6]  */
+                curr.onRejected.push(resolver(onRejected, next, "reject")); /*  [Promises/A+ 2.2.3/2.2.6]  */
                 execute(curr);
-                return next;
+                return next; /*  [Promises/A+ 2.2.7, 3.3]  */
             }
         };
         Promise.all = function(arr) {
@@ -2740,10 +2720,8 @@ _p[25] = {
         /*  deliver an action  */
         var deliver = function(curr, state, name, value) {
             if (curr.state === STATE_PENDING) {
-                curr.state = state;
-                /*  [Promises/A+ 2.1.2.1, 2.1.3.1]  */
-                curr[name] = value;
-                /*  [Promises/A+ 2.1.2.2, 2.1.3.2]  */
+                curr.state = state; /*  [Promises/A+ 2.1.2.1, 2.1.3.1]  */
+                curr[name] = value; /*  [Promises/A+ 2.1.2.2, 2.1.3.2]  */
                 execute(curr);
             }
             return curr;
@@ -2761,20 +2739,18 @@ _p[25] = {
             if (curr[name].length === 0) return;
             /*  iterate over all handlers, exactly once  */
             var handlers = curr[name];
-            curr[name] = [];
-            /*  [Promises/A+ 2.2.2.3, 2.2.3.3]  */
+            curr[name] = []; /*  [Promises/A+ 2.2.2.3, 2.2.3.3]  */
             var func = function() {
-                for (var i = 0; i < handlers.length; i++) handlers[i](value);
+                for (var i = 0; i < handlers.length; i++) handlers[i](value); /*  [Promises/A+ 2.2.5]  */
             };
-            /*  execute procedure asynchronously  */
-            /*  [Promises/A+ 2.2.4, 3.1]  */
+            /*  execute procedure asynchronously  */ /*  [Promises/A+ 2.2.4, 3.1]  */
             if (typeof process === "object" && typeof process.nextTick === "function") process.nextTick(func); else if (typeof setImmediate === "function") setImmediate(func); else setTimeout(func, 0);
         };
         /*  generate a resolver function */
         var resolver = function(cb, next, method) {
             return function(value) {
                 if (typeof cb !== "function") /*  [Promises/A+ 2.2.1, 2.2.7.3, 2.2.7.4]  */
-                next[method].call(next, value); else {
+                next[method].call(next, value); /*  [Promises/A+ 2.2.7.3, 2.2.7.4]  */ else {
                     var result;
                     try {
                         if (value instanceof Promise) {
@@ -2782,19 +2758,16 @@ _p[25] = {
                         } else result = cb(value);
                     } /*  [Promises/A+ 2.2.2.1, 2.2.3.1, 2.2.5, 3.2]  */
                     catch (e) {
-                        next.reject(e);
-                        /*  [Promises/A+ 2.2.7.2]  */
+                        next.reject(e); /*  [Promises/A+ 2.2.7.2]  */
                         return;
                     }
-                    resolve(next, result);
+                    resolve(next, result); /*  [Promises/A+ 2.2.7.1]  */
                 }
             };
         };
-        /*  'Promise Resolution Procedure'  */
-        /*  [Promises/A+ 2.3]  */
+        /*  'Promise Resolution Procedure'  */ /*  [Promises/A+ 2.3]  */
         var resolve = function(promise, x) {
-            /*  sanity check arguments  */
-            /*  [Promises/A+ 2.3.1]  */
+            /*  sanity check arguments  */ /*  [Promises/A+ 2.3.1]  */
             if (promise === x) {
                 promise.reject(new TypeError("cannot resolve promise with itself"));
                 return;
@@ -2807,8 +2780,7 @@ _p[25] = {
                     then = x.then;
                 } /*  [Promises/A+ 2.3.3.1, 3.5]  */
                 catch (e) {
-                    promise.reject(e);
-                    /*  [Promises/A+ 2.3.3.2]  */
+                    promise.reject(e); /*  [Promises/A+ 2.3.3.2]  */
                     return;
                 }
             }
@@ -2817,32 +2789,29 @@ _p[25] = {
             if (typeof then === "function") {
                 var resolved = false;
                 try {
-                    /*  call retrieved 'then' method */
-                    /*  [Promises/A+ 2.3.3.3]  */
-                    then.call(x, /*  resolvePromise  */
-                    /*  [Promises/A+ 2.3.3.3.1]  */
+                    /*  call retrieved 'then' method */ /*  [Promises/A+ 2.3.3.3]  */
+                    then.call(x, 
+                    /*  resolvePromise  */ /*  [Promises/A+ 2.3.3.3.1]  */
                     function(y) {
                         if (resolved) return;
-                        resolved = true;
-                        /*  [Promises/A+ 2.3.3.3.3]  */
+                        resolved = true; /*  [Promises/A+ 2.3.3.3.3]  */
                         if (y === x) /*  [Promises/A+ 3.6]  */
                         promise.reject(new TypeError("circular thenable chain")); else resolve(promise, y);
-                    }, /*  rejectPromise  */
-                    /*  [Promises/A+ 2.3.3.3.2]  */
+                    }, 
+                    /*  rejectPromise  */ /*  [Promises/A+ 2.3.3.3.2]  */
                     function(r) {
                         if (resolved) return;
-                        resolved = true;
-                        /*  [Promises/A+ 2.3.3.3.3]  */
+                        resolved = true; /*  [Promises/A+ 2.3.3.3.3]  */
                         promise.reject(r);
                     });
                 } catch (e) {
                     if (!resolved) /*  [Promises/A+ 2.3.3.3.3]  */
-                    promise.reject(e);
+                    promise.reject(e); /*  [Promises/A+ 2.3.3.3.4]  */
                 }
                 return;
             }
             /*  handle other values  */
-            promise.fulfill(x);
+            promise.fulfill(x); /*  [Promises/A+ 2.3.4, 2.3.3.4]  */
         };
         Promise.resolve = function(value) {
             return new Promise(function(resolve) {
@@ -2858,7 +2827,6 @@ _p[25] = {
         module.exports = Promise;
     }
 };
-
 //src/core/readonly.js
 /**
  * @fileOverview
@@ -2868,6 +2836,7 @@ _p[25] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[26] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -2917,8 +2886,8 @@ _p[26] = {
         });
     }
 };
-
 //src/core/render.js
+
 _p[27] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3037,7 +3006,9 @@ _p[27] = {
                                 renderer.getRenderShape().setVisible(true);
                                 // 更新渲染图形
                                 lastBoxes[j] = renderer.update(renderer.getRenderShape(), node, node._contentBox);
-                            } else if (renderer.getRenderShape()) {
+                            }
+                            // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                             else if (renderer.getRenderShape()) {
                                 renderer.getRenderShape().setVisible(false);
                                 lastBoxes[j] = null;
                             }
@@ -3081,7 +3052,9 @@ _p[27] = {
                                 node._contentBox = node._contentBox.merge(latestBox);
                                 renderer.contentBox = latestBox;
                             }
-                        } else if (renderer.getRenderShape()) {
+                        }
+                        // 如果不应该渲染，但是渲染图形创建过了，需要隐藏起来
+                         else if (renderer.getRenderShape()) {
                             renderer.getRenderShape().setVisible(false);
                         }
                     });
@@ -3129,8 +3102,8 @@ _p[27] = {
         module.exports = Renderer;
     }
 };
-
 //src/core/select.js
+
 _p[28] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3259,7 +3232,6 @@ _p[28] = {
         });
     }
 };
-
 //src/core/shortcut.js
 /**
  * @fileOverview
@@ -3269,6 +3241,7 @@ _p[28] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[29] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3402,7 +3375,6 @@ _p[29] = {
         });
     }
 };
-
 //src/core/status.js
 /**
  * @fileOverview
@@ -3412,6 +3384,7 @@ _p[29] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[30] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3458,8 +3431,8 @@ _p[30] = {
         });
     }
 };
-
 //src/core/template.js
+
 _p[31] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3540,8 +3513,8 @@ _p[31] = {
         });
     }
 };
-
 //src/core/theme.js
+
 _p[32] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3693,8 +3666,8 @@ _p[32] = {
         });
     }
 };
-
 //src/core/utils.js
+
 _p[33] = {
     value: function(require, exports) {
         var kity = _p.r(17);
@@ -3752,14 +3725,13 @@ _p[33] = {
         });
     }
 };
-
 //src/expose-kityminder.js
+
 _p[34] = {
     value: function(require, exports, module) {
         module.exports = window.kityminder = _p.r(35);
     }
 };
-
 //src/kityminder.js
 /**
  * @fileOverview
@@ -3769,6 +3741,7 @@ _p[34] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[35] = {
     value: function(require, exports, module) {
         var kityminder = {
@@ -3823,44 +3796,46 @@ _p[35] = {
         _p.r(59);
         _p.r(60);
         _p.r(61);
-        _p.r(62);
         _p.r(63);
         _p.r(64);
-        _p.r(68);
+        // append
+        _p.r(62);
         _p.r(65);
-        _p.r(67);
+        _p.r(69);
         _p.r(66);
+        _p.r(68);
+        _p.r(67);
         _p.r(40);
         _p.r(36);
         _p.r(37);
         _p.r(38);
         _p.r(39);
         _p.r(41);
-        _p.r(75);
+        _p.r(76);
+        _p.r(79);
         _p.r(78);
         _p.r(77);
-        _p.r(76);
-        _p.r(78);
-        _p.r(80);
         _p.r(79);
-        _p.r(0);
+        _p.r(81);
+        _p.r(80);
         _p.r(1);
+        _p.r(0);
         _p.r(2);
         _p.r(3);
         _p.r(4);
         _p.r(5);
         _p.r(6);
-        _p.r(69);
-        _p.r(73);
         _p.r(70);
-        _p.r(72);
-        _p.r(71);
         _p.r(74);
+        _p.r(71);
+        _p.r(73);
+        _p.r(72);
+        _p.r(75);
         module.exports = kityminder;
     }
 };
-
 //src/layout/btree.js
+
 _p[36] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -3983,8 +3958,8 @@ _p[36] = {
         }
     }
 };
-
 //src/layout/filetree.js
+
 _p[37] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4057,7 +4032,6 @@ _p[37] = {
         }
     }
 };
-
 //src/layout/fish-bone-master.js
 /**
  * @fileOverview
@@ -4067,6 +4041,7 @@ _p[37] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[38] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4111,7 +4086,6 @@ _p[38] = {
         }));
     }
 };
-
 //src/layout/fish-bone-slave.js
 /**
  * @fileOverview
@@ -4121,6 +4095,7 @@ _p[38] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[39] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4172,8 +4147,8 @@ _p[39] = {
         }));
     }
 };
-
 //src/layout/mind.js
+
 _p[40] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4228,7 +4203,6 @@ _p[40] = {
         }));
     }
 };
-
 //src/layout/tianpan.js
 /**
  * @fileOverview
@@ -4238,6 +4212,7 @@ _p[40] = {
  * @author: along
  * @copyright: bpd729@163.com, 2015
  */
+
 _p[41] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4299,8 +4274,8 @@ _p[41] = {
         }));
     }
 };
-
 //src/module/arrange.js
+
 _p[42] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4437,8 +4412,8 @@ _p[42] = {
         });
     }
 };
-
 //src/module/basestyle.js
+
 _p[43] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4552,8 +4527,8 @@ _p[43] = {
         });
     }
 };
-
 //src/module/clipboard.js
+
 _p[44] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -4701,8 +4676,8 @@ _p[44] = {
         });
     }
 };
-
 //src/module/dragtree.js
+
 _p[45] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5042,8 +5017,8 @@ _p[45] = {
         });
     }
 };
-
 //src/module/expand.js
+
 _p[46] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5308,8 +5283,8 @@ _p[46] = {
         });
     }
 };
-
 //src/module/font.js
+
 _p[47] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5455,8 +5430,8 @@ _p[47] = {
         });
     }
 };
-
 //src/module/hyperlink.js
+
 _p[48] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5567,8 +5542,8 @@ _p[48] = {
         });
     }
 };
-
 //src/module/image-viewer.js
+
 _p[49] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5672,8 +5647,8 @@ _p[49] = {
         });
     }
 };
-
 //src/module/image.js
+
 _p[50] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5794,8 +5769,8 @@ _p[50] = {
         });
     }
 };
-
 //src/module/keynav.js
+
 _p[51] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -5941,7 +5916,6 @@ _p[51] = {
         });
     }
 };
-
 //src/module/layout.js
 /**
  * @fileOverview
@@ -5951,6 +5925,7 @@ _p[51] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[52] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6024,8 +5999,8 @@ _p[52] = {
         });
     }
 };
-
 //src/module/node.js
+
 _p[53] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6035,14 +6010,33 @@ _p[53] = {
         var Command = _p.r(9);
         var Module = _p.r(20);
         var Renderer = _p.r(27);
+        function executeNodeTypeHook(command, data) {
+            var km = data.km;
+            var node = data.node;
+            var text = data.text;
+            var typeData = km.getTypeByKey(node.getData("type"));
+            var processedData = {
+                data: {},
+                text: text
+            };
+            if (typeData && typeData.hook && typeof typeData.hook[command] === "function") {
+                try {
+                    processedData = Object.assign(processedData, typeData.hook[command](data));
+                    return processedData;
+                } catch (e) {
+                    // ignore this error
+                    console.log(e);
+                }
+            }
+        }
         /**
-     * @command AppendChildNode
-     * @description 添加子节点到选中的节点中
-     * @param {string|object} textOrData 要插入的节点的文本或数据
-     * @state
-     *    0: 当前有选中的节点
-     *   -1: 当前没有选中的节点
-     */
+   * @command AppendChildNode
+   * @description 添加子节点到选中的节点中
+   * @param {string|object} textOrData 要插入的节点的文本或数据
+   * @state
+   *    0: 当前有选中的节点
+   *   -1: 当前没有选中的节点
+   */
         var AppendChildCommand = kity.createClass("AppendChildCommand", {
             base: Command,
             execute: function(km, text) {
@@ -6050,7 +6044,14 @@ _p[53] = {
                 if (!parent) {
                     return null;
                 }
-                var node = km.createNode(text, parent);
+                var processedData = executeNodeTypeHook("appendChild", {
+                    km: km,
+                    node: parent,
+                    text: text
+                });
+                if (!processedData) return;
+                var node = km.createNode(processedData.text || processedData.data.text, parent);
+                node.setData(processedData.data);
                 km.select(node, true);
                 if (parent.isExpanded()) {
                     node.render();
@@ -6066,22 +6067,30 @@ _p[53] = {
             }
         });
         /**
-     * @command AppendSiblingNode
-     * @description 添加选中的节点的兄弟节点
-     * @param {string|object} textOrData 要添加的节点的文本或数据
-     * @state
-     *    0: 当前有选中的节点
-     *   -1: 当前没有选中的节点
-     */
+   * @command AppendSiblingNode
+   * @description 添加选中的节点的兄弟节点
+   * @param {string|object} textOrData 要添加的节点的文本或数据
+   * @state
+   *    0: 当前有选中的节点
+   *   -1: 当前没有选中的节点
+   */
         var AppendSiblingCommand = kity.createClass("AppendSiblingCommand", {
             base: Command,
             execute: function(km, text) {
+                console.log(km, text);
                 var sibling = km.getSelectedNode();
                 var parent = sibling.parent;
                 if (!parent) {
                     return km.execCommand("AppendChildNode", text);
                 }
-                var node = km.createNode(text, parent, sibling.getIndex() + 1);
+                var processedData = executeNodeTypeHook("appendSibling", {
+                    km: km,
+                    text: text,
+                    node: sibling
+                });
+                if (!processedData) return;
+                var node = km.createNode(processedData.text || processedData.data.text, parent, sibling.getIndex() + 1);
+                node.setData(processedData.data);
                 node.setGlobalLayoutTransform(sibling.getGlobalLayoutTransform());
                 km.select(node, true);
                 node.render();
@@ -6093,12 +6102,12 @@ _p[53] = {
             }
         });
         /**
-     * @command RemoveNode
-     * @description 移除选中的节点
-     * @state
-     *    0: 当前有选中的节点
-     *   -1: 当前没有选中的节点
-     */
+   * @command RemoveNode
+   * @description 移除选中的节点
+   * @state
+   *    0: 当前有选中的节点
+   *   -1: 当前没有选中的节点
+   */
         var RemoveNodeCommand = kity.createClass("RemoverNodeCommand", {
             base: Command,
             execute: function(km) {
@@ -6129,7 +6138,14 @@ _p[53] = {
                     return a.getIndex() - b.getIndex();
                 });
                 var parent = nodes[0].parent;
-                var newParent = km.createNode(text, parent, nodes[0].getIndex());
+                var processedData = executeNodeTypeHook("appendParent", {
+                    km: km,
+                    text: text,
+                    node: nodes[0]
+                });
+                if (!processedData) return;
+                var newParent = km.createNode(processedData.text || processedData.data.text, parent, nodes[0].getIndex());
+                newParent.setData(processedData.data);
                 nodes.forEach(function(node) {
                     newParent.appendChild(node);
                 });
@@ -6166,7 +6182,6 @@ _p[53] = {
         });
     }
 };
-
 //src/module/note.js
 /**
  * @fileOverview
@@ -6176,6 +6191,7 @@ _p[53] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
+
 _p[54] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6272,8 +6288,8 @@ _p[54] = {
         });
     }
 };
-
 //src/module/outline.js
+
 _p[55] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6389,8 +6405,8 @@ _p[55] = {
         });
     }
 };
-
 //src/module/priority.js
+
 _p[56] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6410,8 +6426,7 @@ _p[56] = {
             [ "#FF962E", "#B25000" ], // 4 - orange
             [ "#A464FF", "#4720C4" ], // 5 - purple
             [ "#A3A3A3", "#515151" ], // 6,7,8,9 - gray
-            [ "#A3A3A3", "#515151" ], [ "#A3A3A3", "#515151" ], [ "#A3A3A3", "#515151" ] ];
-            // hue from 1 to 5
+            [ "#A3A3A3", "#515151" ], [ "#A3A3A3", "#515151" ], [ "#A3A3A3", "#515151" ] ]; // hue from 1 to 5
             // jscs:disable maximumLineLength
             var BACK_PATH = "M0,13c0,3.866,3.134,7,7,7h6c3.866,0,7-3.134,7-7V7H0V13z";
             var MASK_PATH = "M20,10c0,3.866-3.134,7-7,7H7c-3.866,0-7-3.134-7-7V7c0-3.866,3.134-7,7-7h6c3.866,0,7,3.134,7,7V10z";
@@ -6429,8 +6444,7 @@ _p[56] = {
                     this.width = this.height = size;
                 },
                 create: function() {
-                    var white, back, mask, number;
-                    // 4 layer
+                    var white, back, mask, number; // 4 layer
                     white = new kity.Path().setPathData(MASK_PATH).fill("white");
                     back = new kity.Path().setPathData(BACK_PATH).setTranslate(.5, .5);
                     mask = new kity.Path().setPathData(MASK_PATH).setOpacity(.8).setTranslate(.5, .5);
@@ -6515,8 +6529,8 @@ _p[56] = {
         });
     }
 };
-
 //src/module/progress.js
+
 _p[57] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6640,8 +6654,8 @@ _p[57] = {
         });
     }
 };
-
 //src/module/resource.js
+
 _p[58] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -6970,8 +6984,8 @@ _p[58] = {
         });
     }
 };
-
 //src/module/select.js
+
 _p[59] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -7077,11 +7091,21 @@ _p[59] = {
                             this.removeAllSelectedNodes();
                             marqueeActivator.selectStart(e);
                             this.setStatus("normal");
-                        } else if (e.isShortcutKey("Ctrl")) {
+                        }
+                        // 点中了节点，并且按了 shift 键：
+                        //     被点中的节点切换选中状态
+                         else if (e.isShortcutKey("Ctrl")) {
                             this.toggleSelect(downNode);
-                        } else if (!downNode.isSelected()) {
+                        }
+                        // 点中的节点没有被选择：
+                        //     单选点中的节点
+                         else if (!downNode.isSelected()) {
                             this.select(downNode, true);
-                        } else if (!this.isSingleSelect()) {
+                        }
+                        // 点中的节点被选中了，并且不是单选：
+                        //     完成整个点击之后需要使其变为单选。
+                        //     不能马上变为单选，因为可能是需要拖动选中的多个节点
+                         else if (!this.isSingleSelect()) {
                             lastDownNode = downNode;
                             lastDownPosition = e.getPosition();
                         }
@@ -7115,8 +7139,8 @@ _p[59] = {
         });
     }
 };
-
 //src/module/style.js
+
 _p[60] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -7220,8 +7244,8 @@ _p[60] = {
         });
     }
 };
-
 //src/module/text.js
+
 _p[61] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
@@ -7474,9 +7498,142 @@ _p[61] = {
         module.exports = TextRenderer;
     }
 };
+//src/module/type.js
+/**
+ * 节点类型
+ */
 
-//src/module/view.js
 _p[62] = {
+    value: function(require, exports, module) {
+        var GlobalMappingKey = "_MinderTypeMapping";
+        var kity = _p.r(17);
+        var Command = _p.r(9);
+        var Module = _p.r(20);
+        var Renderer = _p.r(27);
+        var Minder = _p.r(19);
+        Module.register("Type", function() {
+            function getTypeByKey(key) {
+                return window[GlobalMappingKey][key];
+            }
+            kity.extendClass(Minder, {
+                getTypeMapping: function() {
+                    return window[GlobalMappingKey];
+                },
+                getTypeByKey: getTypeByKey
+            });
+            var TypeCommand = kity.createClass("TypeCommand", {
+                base: Command,
+                execute: function(minder, type) {
+                    var nodes = minder.getSelectedNodes();
+                    nodes.forEach(function(node) {
+                        node.setData("type", type).render();
+                    });
+                    minder.layout(200);
+                },
+                queryValue: function(minder) {
+                    var node = minder.getSelectedNode();
+                    return node && node.getData("type") || null;
+                },
+                queryState: function(km) {
+                    return km.getSelectedNode() ? 0 : -1;
+                }
+            });
+            /**
+     * @class 资源的覆盖图形
+     *
+     * 该类为一个资源以指定的颜色渲染一个动态的覆盖图形
+     */
+            var TypeOverlay = kity.createClass("TypeOverlay", {
+                base: kity.Group,
+                constructor: function() {
+                    this.callBase();
+                },
+                setValue: function(type) {
+                    var typeData = getTypeByKey(type);
+                    // 合并样式数据
+                    var style = Object.assign({}, {
+                        fontSize: 12,
+                        paddingX: 6,
+                        paddingY: 4,
+                        verticalAlign: "middle",
+                        boarderRadius: 2,
+                        color: "#333",
+                        background: "transparent"
+                    }, typeData.style);
+                    var text = new kity.Text().setFontSize(style.fontSize).setVerticalAlign(style.verticalAlign);
+                    var rect = new kity.Rect();
+                    var box;
+                    this.addShapes([ rect, text ]);
+                    var name = typeData.name;
+                    if (type == this.lastType) {
+                        box = this.lastBox;
+                    } else {
+                        text.setContent(name);
+                        box = text.getBoundaryBox();
+                        this.lastType = type;
+                        this.lastBox = box;
+                    }
+                    text.setX(style.paddingX).fill(style.color);
+                    this.width = Math.round(box.width + style.paddingX * 2);
+                    this.height = Math.round(box.height + style.paddingY * 2);
+                    rect.setSize(this.width, this.height).setPosition(0, box.y - style.paddingY).setRadius(style.boarderRadius).fill(style.background);
+                }
+            });
+            /**
+     * @class 资源渲染器
+     */
+            var TypeRenderer = kity.createClass("TypeRenderer", {
+                base: Renderer,
+                create: function(node) {
+                    return new kity.Group();
+                },
+                shouldRender: function(node) {
+                    const type = node.getData("type");
+                    return type && getTypeByKey(type);
+                },
+                update: function(container, node, box) {
+                    var spaceRight = node.getStyle("space-right");
+                    var type = node.getData("type");
+                    // hideTypeRect 需要隐藏节点类型展示
+                    if (!type || getTypeByKey(type).hideTypeRect) return;
+                    //var index = node.getIndex() || 0;
+                    var overlay = new TypeOverlay();
+                    container.addShape(overlay);
+                    overlay.setVisible(true);
+                    overlay.setValue(type);
+                    overlay.setTranslate(spaceRight, -1);
+                    container.setTranslate(box.right, 0);
+                    return new kity.Box({
+                        x: box.right + overlay.width,
+                        y: Math.round(-overlay.height / 2),
+                        width: spaceRight,
+                        height: overlay.height
+                    });
+                }
+            });
+            return {
+                init: function(options) {
+                    if (options.moduleOptions && Array.isArray(options.moduleOptions.type)) {
+                        window[GlobalMappingKey] = options.moduleOptions.type.reduce(function(res, item) {
+                            res[item.key] = item;
+                            return res;
+                        }, {});
+                        this.setOption("typeMapping", window[GlobalMappingKey]);
+                    }
+                },
+                commands: {
+                    type: TypeCommand
+                },
+                renderers: {
+                    right: TypeRenderer
+                }
+            };
+        });
+    }
+};
+//src/module/view.js
+
+_p[63] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
         var utils = _p.r(33);
@@ -7561,7 +7718,7 @@ _p[62] = {
                 }
                 this._minder.on("normal.mousedown normal.touchstart " + "inputready.mousedown inputready.touchstart " + "readonly.mousedown readonly.touchstart", function(e) {
                     if (e.originEvent.button == 2) {
-                        e.originEvent.preventDefault();
+                        e.originEvent.preventDefault(); // 阻止中键拉动
                     }
                     // 点击未选中的根节点临时开启
                     if (e.getTargetNode() == this.getRoot() || e.originEvent.button == 2 || e.originEvent.altKey) {
@@ -7570,7 +7727,7 @@ _p[62] = {
                     }
                 }).on("normal.mousemove normal.touchmove " + "readonly.mousemove readonly.touchmove " + "inputready.mousemove inputready.touchmove", function(e) {
                     if (e.type == "touchmove") {
-                        e.preventDefault();
+                        e.preventDefault(); // 阻止浏览器的后退事件
                     }
                     if (!isTempDrag) return;
                     var offset = kity.Vector.fromPoints(lastPosition, e.getPosition("view"));
@@ -7796,9 +7953,9 @@ _p[62] = {
         });
     }
 };
-
 //src/module/zoom.js
-_p[63] = {
+
+_p[64] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
         var utils = _p.r(33);
@@ -7975,9 +8132,9 @@ _p[63] = {
         });
     }
 };
-
 //src/protocol/json.js
-_p[64] = {
+
+_p[65] = {
     value: function(require, exports, module) {
         var data = _p.r(12);
         data.registerProtocol("json", module.exports = {
@@ -7994,9 +8151,9 @@ _p[64] = {
         });
     }
 };
-
 //src/protocol/markdown.js
-_p[65] = {
+
+_p[66] = {
     value: function(require, exports, module) {
         var data = _p.r(12);
         var LINE_ENDING_SPLITER = /\r\n|\r|\n/;
@@ -8125,9 +8282,9 @@ _p[65] = {
         });
     }
 };
-
 //src/protocol/png.js
-_p[66] = {
+
+_p[67] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
         var data = _p.r(12);
@@ -8345,9 +8502,9 @@ _p[66] = {
         });
     }
 };
-
 //src/protocol/svg.js
-_p[67] = {
+
+_p[68] = {
     value: function(require, exports, module) {
         var data = _p.r(12);
         /**
@@ -8600,8 +8757,7 @@ _p[67] = {
                 svgDom = svgContainer.querySelector("svg");
                 svgDom.setAttribute("width", width + padding * 2 | 0);
                 svgDom.setAttribute("height", height + padding * 2 | 0);
-                svgDom.setAttribute("style", "background: " + minder.getStyle("background"));
-                //"font-family: Arial, Microsoft Yahei, Heiti SC; " +
+                svgDom.setAttribute("style", "background: " + minder.getStyle("background")); //"font-family: Arial, Microsoft Yahei, Heiti SC; " +
                 svgDom.setAttribute("viewBox", [ 0, 0, width + padding * 2 | 0, height + padding * 2 | 0 ].join(" "));
                 tempSvgContainer = document.createElement("div");
                 cleanSVG(svgDom, renderBox.x - padding | 0, renderBox.y - padding | 0);
@@ -8617,9 +8773,9 @@ _p[67] = {
         });
     }
 };
-
 //src/protocol/text.js
-_p[68] = {
+
+_p[69] = {
     value: function(require, exports, module) {
         var data = _p.r(12);
         var Browser = _p.r(17).Browser;
@@ -8840,7 +8996,6 @@ _p[68] = {
         });
     }
 };
-
 //src/template/default.js
 /**
  * @fileOverview
@@ -8850,7 +9005,8 @@ _p[68] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[69] = {
+
+_p[70] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("default", {
@@ -8874,7 +9030,6 @@ _p[69] = {
         });
     }
 };
-
 //src/template/filetree.js
 /**
  * @fileOverview
@@ -8884,7 +9039,8 @@ _p[69] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[70] = {
+
+_p[71] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("filetree", {
@@ -8902,7 +9058,6 @@ _p[70] = {
         });
     }
 };
-
 //src/template/fish-bone.js
 /**
  * @fileOverview
@@ -8912,7 +9067,8 @@ _p[70] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[71] = {
+
+_p[72] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("fish-bone", {
@@ -8944,7 +9100,6 @@ _p[71] = {
         });
     }
 };
-
 //src/template/right.js
 /**
  * @fileOverview
@@ -8954,7 +9109,8 @@ _p[71] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[72] = {
+
+_p[73] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("right", {
@@ -8968,7 +9124,6 @@ _p[72] = {
         });
     }
 };
-
 //src/template/structure.js
 /**
  * @fileOverview
@@ -8978,7 +9133,8 @@ _p[72] = {
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-_p[73] = {
+
+_p[74] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("structure", {
@@ -8991,7 +9147,6 @@ _p[73] = {
         });
     }
 };
-
 //src/template/tianpan.js
 /**
  * @fileOverview
@@ -9001,7 +9156,8 @@ _p[73] = {
  * @author: along
  * @copyright: bpd729@163.com, 2015
  */
-_p[74] = {
+
+_p[75] = {
     value: function(require, exports, module) {
         var template = _p.r(31);
         template.register("tianpan", {
@@ -9020,9 +9176,9 @@ _p[74] = {
         });
     }
 };
-
 //src/theme/default.js
-_p[75] = {
+
+_p[76] = {
     value: function(require, exports, module) {
         var theme = _p.r(32);
         [ "classic", "classic-compact" ].forEach(function(name) {
@@ -9079,9 +9235,9 @@ _p[75] = {
         });
     }
 };
-
 //src/theme/fish.js
-_p[76] = {
+
+_p[77] = {
     value: function(require, exports, module) {
         var theme = _p.r(32);
         theme.register("fish", {
@@ -9130,9 +9286,9 @@ _p[76] = {
         });
     }
 };
-
 //src/theme/fresh.js
-_p[77] = {
+
+_p[78] = {
     value: function(require, exports, module) {
         var kity = _p.r(17);
         var theme = _p.r(32);
@@ -9199,9 +9355,9 @@ _p[77] = {
         }
     }
 };
-
 //src/theme/snow.js
-_p[78] = {
+
+_p[79] = {
     value: function(require, exports, module) {
         var theme = _p.r(32);
         [ "snow", "snow-compact" ].forEach(function(name) {
@@ -9254,9 +9410,9 @@ _p[78] = {
         });
     }
 };
-
 //src/theme/tianpan.js
-_p[79] = {
+
+_p[80] = {
     value: function(require, exports, module) {
         var theme = _p.r(32);
         [ "tianpan", "tianpan-compact" ].forEach(function(name) {
@@ -9316,9 +9472,9 @@ _p[79] = {
         });
     }
 };
-
 //src/theme/wire.js
-_p[80] = {
+
+_p[81] = {
     value: function(require, exports, module) {
         var theme = _p.r(32);
         theme.register("wire", {

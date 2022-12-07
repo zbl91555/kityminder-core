@@ -230,6 +230,7 @@ define(function(require, exports, module) {
             }
 
             json = compatibility(json);
+            console.log(json);
 
             this.importNode(this._root, json.root);
 

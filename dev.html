@@ -1,71 +1,218 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>KityMinder Example</title>
 
-    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
-    <link rel="stylesheet" href="src/kityminder.css" rel="stylesheet">
+    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    <link rel="stylesheet" href="src/kityminder.css" rel="stylesheet" />
 
     <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
 
-        #minder-view {
-            position: absolute;
-            border: 1px solid #ccc;
-            left: 10px;
-            top: 10px;
-            bottom: 10px;
-            right: 10px;
-        }
+      #minder-view {
+        position: absolute;
+        border: 1px solid #ccc;
+        left: 10px;
+        top: 10px;
+        bottom: 10px;
+        right: 10px;
+      }
     </style>
 
-    <script type="text/javascript" src="node_modules/kity/dist/kity.js"></script>
-</head>
-<body>
-    <script id="minder-view" type="application/kityminder" minder-data-type="json">
-    {
+    <script
+      type="text/javascript"
+      src="node_modules/kity/dist/kity.js"
+    ></script>
+  </head>
+  <body>
+    <div id="minder-view"></div>
+    <script id="minder-data" type="application/json">
+      {
         "root": {
-            "data": {
-                "text": "百度产品",
-                "image": "https://www.baidu.com/img/bd_logo1.png?where=super",
-                "imageSize": { "width": 270, "height": 129 }
-            },
-            "children": [
-                { "data": { "text": "新闻" } },
-                { "data": { "text": "网页", "priority": 1 } },
-                { "data": { "text": "贴吧", "priority": 2 } },
-                { "data": { "text": "知道", "priority": 2 } },
-                { "data": { "text": "音乐", "priority": 3 } },
-                { "data": { "text": "图片", "priority": 3 } },
-                { "data": { "text": "视频", "priority": 3 } },
-                { "data": { "text": "地图", "priority": 3 } },
-                { "data": { "text": "百科", "priority": 3 } },
-                { "data": { "text": "更多", "hyperlink": "http://www.baidu.com/more" } }
-            ]
+          "data": {
+            "text": "全部用例"
+          },
+          "children": [
+            {
+              "data": { "text": "模块一", "type": "Module" },
+              "children": [
+                {
+                  "data": { "text": "模块二", "type": "Module" },
+                  "children": [
+                    { "data": { "text": "用例1", "type": "TestCase" } }
+                  ]
+                }
+              ]
+            }
+          ]
         }
-    }
+      }
     </script>
-</body>
+  </body>
 
-<!-- *************************** Module 形式加载引入 **************************** -->
-<script type="text/javascript" src="node_modules/seajs/dist/sea-debug.js"></script>
-<script type="text/javascript">
+  <!-- *************************** Module 形式加载引入 **************************** -->
+  <script
+    type="text/javascript"
+    src="node_modules/seajs/dist/sea-debug.js"
+  ></script>
+  <script type="text/javascript">
+    const hook = {
+      appendChild({ node, km, text }) {
+        const childMapping = {
+          TestCase: "Step",
+          Module: "TestCase",
+          Step: "Result",
+          Result: "Data",
+        };
+
+        const typeData = km.getTypeByKey(node.getData("type"));
+
+        const childTypeData = km.getTypeByKey(childMapping[typeData.key]);
+
+        // 步骤，结果 只允许有一个子节点
+        if (
+          ["Result", "Step"].includes(typeData.key) &&
+          node.children.length >= 1
+        ) {
+          throw "节点类型不允许创建多个子节点";
+        }
+
+        if (!childTypeData) throw "节点类型没有子层级不允许创建";
+
+        return {
+          data: {
+            type: childTypeData.key,
+            text: childTypeData.defaultNodeText,
+          },
+        };
+      },
+      appendSibling({ node, km, text }) {
+        const siblingTypeData = km.getTypeByKey(node.getData("type"));
+        // 一个步骤只允许有一个预期和数据
+        if (["Result", "Data"].includes(siblingTypeData.key)) {
+          throw "改节点类型不允许创建同级节点";
+        }
+        return {
+          data: {
+            type: siblingTypeData.key,
+            text: siblingTypeData.defaultNodeText,
+          },
+        };
+      },
+      appendParent({ node, km, text }) {
+        const typeData = km.getTypeByKey(node.getData("type"));
+        if (["Step", "Result", "Data"].includes(typeData.key)) {
+          // 先暴力禁止创建，后续精细化处理
+          // TODO: message
+          throw "该节点类型不允许创建父节点";
+        }
+
+        const parentMapping = {
+          TestCase: "Module",
+          Module: "Module",
+        };
+
+        const parentTypeData = km.getTypeByKey(parentMapping[typeData.key]);
+
+        if (["TestCase", "Module"].includes(typeData.key)) {
+          // TODO:父节点是 module，最大支持 8 个层级，需要判断层级是否超限
+          let currentNode = node;
+          let moduleCount = 0;
+          let children = [];
+        }
+        return {
+          data: {
+            type: "Module",
+            text: parentTypeData.defaultNodeText,
+          },
+        };
+      },
+    };
+
+    window.minderOptions = {
+      moduleOptions: {
+        type: [
+          {
+            name: "模块",
+            key: "Module",
+            defaultNodeText: "新建模块",
+            style: {
+              color: "#156ce2",
+              background: "#e3f3ff",
+            },
+            hook,
+          },
+          {
+            name: "测试用例",
+            key: "TestCase",
+            defaultNodeText: "新建测试用例",
+            style: {
+              background: "#fef5cc",
+              color: "#eab63a",
+            },
+            hook,
+          },
+          {
+            name: "前置条件",
+            key: "Precondition",
+            defaultNodeText: "新建前置条件",
+            style: {
+              background: "#d6f8e7",
+              color: "#1db06f",
+            },
+            hook,
+          },
+          {
+            name: "步骤",
+            key: "Step",
+            defaultNodeText: "新建步骤",
+            style: {
+              background: "skyblue",
+              color: "orange",
+            },
+            hook,
+          },
+          {
+            name: "预期结果",
+            key: "Result",
+            hideTypeRect: true,
+            defaultNodeText: "新建预期结果",
+            hook,
+          },
+          {
+            name: "数据",
+            key: "Data",
+            hideTypeRect: true,
+            defaultNodeText: "新建数据",
+            hook,
+          },
+        ],
+      },
+    };
+  </script>
+  <script type="text/javascript">
     /* global seajs */
     seajs.config({
-        base: './src'
+      base: "./src",
     });
-    define('start', function(require) {
-        var Minder = require('kityminder').Minder;
+    define("start", function (require) {
+      var Minder = require("kityminder").Minder;
 
-        // 创建 km 实例
-        var km = window.km = new Minder();
-        km.setup('#minder-view');
+      // 创建 km 实例
+      var km = (window.km = new Minder(window.minderOptions));
+      km.renderTo(document.getElementById("minder-view"));
+
+      km.importJson(
+        JSON.parse(document.getElementById("minder-data").textContent)
+      );
+
+      console.log(km);
     });
-    seajs.use('start');
-</script>
+    seajs.use("start");
+  </script>
 </html>

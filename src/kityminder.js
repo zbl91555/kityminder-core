@@ -66,6 +66,9 @@ define(function(require, exports, module) {
     require('./module/view');
     require('./module/zoom');
 
+    // append
+    require('./module/type');
+
     require('./protocol/json');
     require('./protocol/text');
     require('./protocol/markdown');
